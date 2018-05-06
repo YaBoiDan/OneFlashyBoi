@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 Very simple HTTP server in python.
-Usage::
+Usage:
 	 ./HTTPserver.py [<port>]
 """
 
@@ -18,7 +18,6 @@ global Dataz,process, R, G, B, R2, G2, B2 #We need to make them global variables
 process = ""
 Dataz = "Nil"
 dict = {}
-
 R = 0 #We need these otherwise it flags as accessing a variable before it is defined (See the layout of 'Switch')
 G = 0
 B = 0
@@ -87,8 +86,8 @@ class S(BaseHTTPRequestHandler):
 		#self.wfile.write("You did a POST!") #Send reply
 		print >>sys.stderr,"From: ", self. client_address
 		length = int(self.headers['Content-Length'])
-		print >>sys.stderr,"Data Length: ",length
 		Dataz = self.rfile.read(length)
+		print >>sys.stderr,"Data Length: ",length
 		print ("======Start All Data======")
 		print (Dataz)
 		print ("======End All Data======")
@@ -111,7 +110,7 @@ class S(BaseHTTPRequestHandler):
 				print ("=== Split Again End ===")
 				print ("====== String Split End ======")
 				if VarName == "PiLights":
-					if VarValue.startswith("On") and len(VarValue) < 6:
+					if VarValue.startswith("On") and len(VarValue) < 6: #Change to Regex (re.match(pattern, string, flags=0)) Patter is
 						try:
 							self.KillLights()
 						except:
@@ -123,8 +122,9 @@ class S(BaseHTTPRequestHandler):
 							self.wfile.write(("PiLights ",VarValue)) #Send reply
 					elif VarValue == "Off":
 						try:
+							print ("PILights ",VarValue)
 							process.poll
-							print ("PILights are already on... Killing...")
+							print ("PILights are on... Killing...")
 							process.terminate()
 							motephat.clear()
 							motephat.show()
@@ -212,6 +212,7 @@ class S(BaseHTTPRequestHandler):
 		print ("")
 
 def run(server_class=HTTPServer, handler_class=S, port=666):
+	global process
 	try:
 		server_address = ('', port)
 		httpd = server_class(server_address, handler_class)
@@ -221,9 +222,12 @@ def run(server_class=HTTPServer, handler_class=S, port=666):
 		print("Interrupt received, stopping...")
 	finally:
 		#os.kill(process.pid, signal.SIGINT)
+		os.system('clear')
+		print ("RIP Pi Lights")
 		try:
-			KillLights()
+			self.KillLights()
 		except:
+			print ("Failed to kill standard way btw...")
 			motephat.clear()
 			motephat.show()
 		quit()
