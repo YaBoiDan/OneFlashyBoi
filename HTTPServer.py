@@ -223,8 +223,8 @@ def run(server_class=HTTPServer, handler_class=S, port=666):
 		print ("RIP Pi Lights")
 		try:
 			self.KillLights()
-			print ("Failed to kill standard way btw...")
 		except:
+			print ("Failed to kill standard way btw...")
 			motephat.clear()
 			motephat.show()
 		quit()
