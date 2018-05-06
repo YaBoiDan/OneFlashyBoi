@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 Very simple HTTP server in python.
-Usage::
+Usage:
 	 ./HTTPserver.py [<port>]
 """
 
@@ -33,14 +33,14 @@ class S(BaseHTTPRequestHandler):
 	
 	def KillLights(self):
 		process.poll
-		print "PILights are already on... Killing..."
-		motephat.clear()
-		motephat.show()
+		print ("PILights are already on... Killing...")
 		process.terminate()
 		process.returncode()
+		motephat.clear()
+		motephat.show()
 
 	def do_GET(self):
-		print "********Start GET********" #Get whole list and filter through on their side or ours?
+		print ("********Start GET********") #Get whole list and filter through on their side or ours?
 		self._set_headers()
 		print ("Var(s) Requested: ",self.path[1:])
 		VarReq = self.path[1:]
@@ -72,8 +72,8 @@ class S(BaseHTTPRequestHandler):
 					break
 			dicVarReq = dicVarReq[:-1]
 			self.wfile.write(dicVarReq)
-		print "********End GET********"
-		print ""
+		print ("********End GET********")
+		print ("")
 
 	def do_HEAD(self):
 		print ("********Header Request********")
@@ -81,17 +81,17 @@ class S(BaseHTTPRequestHandler):
   
 	def do_POST(self):
 		global process
-		print "********Start POST********"
+		print ("********Start POST********")
 		print >>sys.stderr,"Header: ", self._set_headers()
-		#self.wfile.write("You did a POST!") #Send reply
+		self.wfile.write("You did a POST!") #Send reply
 		print >>sys.stderr,"From: ", self. client_address
 		length = int(self.headers['Content-Length'])
-		print >>sys.stderr,"Data Length: ",length
 		Dataz = self.rfile.read(length)
+		print >>sys.stderr,"Data Length: ",length
 		print ("======Start All Data======")
 		print (Dataz)
-		print "======End All Data======"
-		print ""
+		print ("======End All Data======")
+		print ("")
 		
 		MadData = Dataz.split(";") #Multiple Vars are separated with this
 		print ("====== String Split Start ======")
@@ -119,8 +119,9 @@ class S(BaseHTTPRequestHandler):
 							self.wfile.write(("PiLights ",VarValue)) #Send reply
 					elif VarValue == "Off":
 						try:
+							print ("PILights ",VarValue)
 							process.poll
-							print "PILights are on... Killing..."
+							print ("PILights are on... Killing...")
 							process.terminate()
 							motephat.clear()
 							motephat.show()
@@ -180,7 +181,7 @@ class S(BaseHTTPRequestHandler):
 									process = subprocess.Popen(["python3.4", "/home/pi/bin/Python/MoteScripts/moteFade.py",R,G,B,R2,G2,B2])
 									self.wfile.write(("PiLights ",VarValue," ",R," ",G," ",B," x ",R2," ",G2," ",B2)) #Send reply
 						except:
-							print "RGB Colour error!"
+							print ("RGB Colour error!")
 					elif VarValue.startswith('Man'):
 						try:
 							Colours = SepDataz.split(".")
@@ -195,30 +196,34 @@ class S(BaseHTTPRequestHandler):
 								process = subprocess.Popen(["python3.4", "/home/pi/bin/Python/MoteScripts/manualSet.py",R,G,B])
 								self.wfile.write(("PiLights ",VarValue," ",R," ",G," ",B)) #Send reply
 						except:
-							print "RGB Colour error!"
+							print ("RGB Colour error!")
 					else:
 						try:
 							self.KillLights()
 						except:
-							print "No task running"
+							print ("No task running")
 		except IndexError:
-			print "Var does not fit format"
+			print ("Var does not fit format")
 		
-		print "********End POST********"
-		print ""
+		print ("********End POST********")
+		print ("")
 
 def run(server_class=HTTPServer, handler_class=S, port=666):
+	global process
 	try:
 		server_address = ('', port)
 		httpd = server_class(server_address, handler_class)
-		print 'Starting Server...'
+		print ('Starting Server...')
 		httpd.serve_forever()
 	except KeyboardInterrupt:
 		print("Interrupt received, stopping...")
 	finally:
 		#os.kill(process.pid, signal.SIGINT)
+		os.system('clear')
+		print ("RIP Pi Lights")
 		try:
 			self.KillLights()
+			print ("Failed to kill standard way btw...")
 		except:
 			motephat.clear()
 			motephat.show()
