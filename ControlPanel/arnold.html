@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <script>
+        var MyApp = {};
+        MyApp.defaultColor = "#000000"
+        MyApp.Colour1 = MyApp.defaultColor
+    </script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        function hexToRgb(hex) {
+            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#PiLightsOn').click(function() {
+                $.post("/", {
+                        PiLights: "On"
+                    },
+                    function(data, status) {
+                        alert("Return Message:\n" + data);
+                    });
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#PiLightsOff').click(function() {
+                $.post("/", {
+                        PiLights: "Off"
+                    },
+                    function(data, status) {
+                        alert("Return Message:\n" + data);
+                    });
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#PiLightsHell').click(function() {
+                $.post("/", {
+                        PiLights: "Hell"
+                    },
+                    function(data, status) {
+                        alert("Return Message:\n" + data);
+                    });
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#PiLightsBilge').click(function() {
+                $.post("/", {
+                        PiLights: "Bilge"
+                    },
+                    function(data, status) {
+                        alert("Return Message:\n" + data);
+                    });
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#PiLightsMan').click(function() {
+                var R = (hexToRgb(MyApp.Colour1).r);
+                var G = (hexToRgb(MyApp.Colour1).g);
+                var B = (hexToRgb(MyApp.Colour1).b);
+                console.log(R, G, B);
+                $.post("/", {
+                        PiLights: ("Man." + R + "." + G + "." + B)
+                    },
+                    function(data, status) {
+                        alert("Return Message:\n" + data);
+                    });
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#PiLightsFade').click(function() {
+                var R = (hexToRgb(MyApp.Colour1).r);
+                var G = (hexToRgb(MyApp.Colour1).g);
+                var B = (hexToRgb(MyApp.Colour1).b);
+                var R2 = (hexToRgb(MyApp.Colour2).r);
+                var G2 = (hexToRgb(MyApp.Colour2).g);
+                var B2 = (hexToRgb(MyApp.Colour2).b);
+                console.log(R, G, B, "x", R2, G2, B2);
+                $.post("/", {
+                        PiLights: ("ManFade." + R + "." + G + "." + B + "." + R2 + "." + G2 + "." + B2)
+                    },
+                    function(data, status) {
+                        alert("Return Message:\n" + data);
+                    });
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <H1>
+        <B>Arnold Control Panel V1.0</B>
+    </H1>
+    <p>
+        <input type="button" value="On" id="PiLightsOn">
+        <input type="button" value="Off" id="PiLightsOff">
+    </p>
+    <p>
+        <input type="button" value="Hell" id="PiLightsHell">
+        <input type="button" value="Bilge" id="PiLightsBilge">
+    </p>
+    <p>
+        <input type="button" value="Manual" id="PiLightsMan">
+        <input type="button" value="Fade" id="PiLightsFade">
+    </p>
+    <p>
+        <table>
+            <tr>
+                <label for="colorWell2">Color 1:</label>
+                <input type="color" value=MyApp.defaultColor id="colorWell2">
+            </tr>
+            <script>
+                var colorWell;
+                window.addEventListener("load", startup, false);
+
+                function startup() {
+                    colorWell = document.querySelector("#colorWell");
+                    colorWell.value = MyApp.defaultColor;
+                    colorWell.addEventListener("change", updateAll, false);
+                    colorWell.select();
+                }
+
+                function updateAll(event) {
+                    MyApp.Colour1 = event.target.value;
+                    //alert("Colour: " + MyApp.Colour1)
+                }
+            </script>
+            <tr>
+                <script>
+                    var colorWell;
+                    window.addEventListener("load", startup, false);
+
+                    function startup() {
+                        colorWell2 = document.querySelector("#colorWell2");
+                        colorWell2.value = MyApp.defaultColor;
+                        colorWell2.addEventListener("change", updateAll, false);
+                        colorWell2.select();
+                    }
+
+                    function updateAll(event) {
+                        MyApp.Colour2 = event.target.value;
+                        //alert("Colour: " + MyApp.Colour1)
+                    }
+                </script>
+                <label for="colorWell">Color 2:</label>
+                <input type="color" value=MyApp.defaultColor id="colorWell2">
+            </tr>
+        </table>
+    </p>
+    <footer>For Mol! &#10084</footer>
+</body>
+
+</html>

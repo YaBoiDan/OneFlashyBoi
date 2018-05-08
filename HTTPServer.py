@@ -5,6 +5,13 @@ Usage:
 	 ./HTTPserver.py [<port>]
 """
 
+if True: #Need a way of checking this...
+	RGBW = "" #Makes all files 'FileName'
+else:
+	RGBW = "W" #Makes all files 'FileNameW'
+
+#Investigate why it tries to kill and once it can't then runs the app, strange...
+
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import SocketServer
 import sys
@@ -13,9 +20,12 @@ import time
 import subprocess
 import os
 import signal
+import re
 
-global Dataz,process, R, G, B, R2, G2, B2 #We need to make them global variables so they can be read inside the function.
+global Dataz,process, MoteApp, MoteAppLoc, R, G, B, R2, G2, B2 #We need to make them global variables so they can be read inside the function.
 process = ""
+MoteApp = ""
+MoteAppLoc = "/home/pi/bin/Python/MoteScripts/"
 Dataz = "Nil"
 dict = {}
 R = 0 #We need these otherwise it flags as accessing a variable before it is defined (See the layout of 'Switch')
@@ -32,12 +42,22 @@ class S(BaseHTTPRequestHandler):
 		self.end_headers()
 	
 	def KillLights(self):
-		process.poll
-		print ("PILights are already on... Killing...")
-		process.terminate()
-		process.returncode()
-		motephat.clear()
-		motephat.show()
+		global process
+		if process == "": #Because it is set as a string above to stop NameError (Calling before defined)
+			print ("PiLights are not running...")
+		else:
+			print ("PILights are running... Killing...")
+			process.terminate()
+			process.kill()
+			motephat.clear()
+			motephat.show()
+			process = subprocess.call(["python3.4", "/home/pi/bin/Python/MoteScripts/moteOff.py"])
+			process = ""
+	
+	def hex_to_rgb(self,value): #This will be handled this side instead going forward
+		value = value.lstrip('#')
+		length = len(value)
+		return tuple(int(value[i:i + length / 3], 16) for i in range(0, length, length / 3))
 
 	def do_GET(self):
 		print ("********Start GET********") #Get whole list and filter through on their side or ours?
@@ -45,12 +65,7 @@ class S(BaseHTTPRequestHandler):
 		print ("Var(s) Requested: ",self.path[1:])
 		VarReq = self.path[1:]
 		try:
-			if self.path == ("/jives.html"):
-					f = open("/home/pi/bin/Python/ControlPanel/" + self.path)
-					self.wfile.write(f.read())
-					f.close()
-					return
-			if self.path.lower == ("/arnold.html"):
+			if self.path == ("/jives.html") or self.path == ("/Jives.html") or self.path == ("/arnold.html") or self.path == ("/Arnold.html"): 
 					f = open("/home/pi/bin/Python/ControlPanel/" + self.path)
 					self.wfile.write(f.read())
 					f.close()
@@ -83,7 +98,7 @@ class S(BaseHTTPRequestHandler):
 		global process
 		print ("********Start POST********")
 		print >>sys.stderr,"Header: ", self._set_headers()
-		self.wfile.write("You did a POST!") #Send reply
+		#self.wfile.write("You did a POST!") #Send reply
 		print >>sys.stderr,"From: ", self. client_address
 		length = int(self.headers['Content-Length'])
 		Dataz = self.rfile.read(length)
@@ -110,98 +125,83 @@ class S(BaseHTTPRequestHandler):
 				print ("=== Split Again End ===")
 				print ("====== String Split End ======")
 				if VarName == "PiLights":
-					if VarValue == "On":
-						try:
-							self.KillLights()
-						except:
-							print ("PILights ",VarValue)
+					if re.match("On", VarValue) or re.match("On\.\d{0,2}", VarValue):
+						print ("PILights ",VarValue)
+						#print (x," Matched the regex")
+						self.KillLights()
+						if (RGBW == "W"):
+							Brightness = SepDataz.split(".")
+							Brightness = float(Brightness[1])/10 #Receives brightness 1-10
+							print ("Brightness: " ,Brightness)
+							process = subprocess.call(["python3.4", "/home/pi/bin/Python/MoteScripts/moteOnW.py",str(Brightness)]) #Must be passed as string
+							#MoteApp = "'moteOn{0}.py',{1}'".format(RGBW,str(Brightness)) #Brightness Must be passed as string #Test this...
+						else:
+							#MoteApp = "moteOn{0}.py".format(RGBW)
 							process = subprocess.Popen(["python3.4", "/home/pi/bin/Python/MoteScripts/moteOn.py"])
-							self.wfile.write(("PiLights ",VarValue)) #Send reply
+						self.wfile.write(("PiLights ",VarValue)) #Send reply
 					elif VarValue == "Off":
-						try:
-							print ("PILights ",VarValue)
-							process.poll
-							print ("PILights are on... Killing...")
-							process.terminate()
-							motephat.clear()
-							motephat.show()
-							self.wfile.write(("PiLights ",VarValue)) #Send reply
-						except:
-							print ("PILights Not Started")
-							self.wfile.write("PiLights Not Started") #Send reply
+						self.KillLights()
 					elif VarValue == "Rainbow":
-						try:
-							self.KillLights()
-						except:
-							print ("PILights ",VarValue)
-							process = subprocess.Popen(["python3.4", "/home/pi/bin/Python/MoteScripts/rainbow.py"])
-							self.wfile.write(("PiLights ",VarValue)) #Send reply
+						self.KillLights()
+						print ("PILights ",VarValue)
+						process = subprocess.Popen(["python3.4", "/home/pi/bin/Python/MoteScripts/rainbow.py"])
+						self.wfile.write(("PiLights ",VarValue)) #Send reply
 					elif VarValue == "Bilge":
-						try:
-							self.KillLights()
-						except:
-							print ("PILights ",VarValue)
-							process = subprocess.Popen(["python3.4", "/home/pi/bin/Python/MoteScripts/bilgetank.py"])
-							self.wfile.write(("PiLights ",VarValue)) #Send reply
+						self.KillLights()
+						print ("PILights ",VarValue)
+						process = subprocess.Popen(["python3.4", "/home/pi/bin/Python/MoteScripts/bilgetank.py"])
+						self.wfile.write(("PiLights ",VarValue)) #Send reply
 					elif VarValue == "Hell":
-						try:
-							self.KillLights()
-						except:
-							print ("PILights ",VarValue)
-							process = subprocess.Popen(["python3.4", "/home/pi/bin/Python/MoteScripts/helltank.py"])
-							self.wfile.write(("PiLights ",VarValue)) #Send reply
+						self.KillLights()
+						print ("PILights ",VarValue)
+						process = subprocess.Popen(["python3.4", "/home/pi/bin/Python/MoteScripts/helltank.py"])
+						self.wfile.write(("PiLights ",VarValue)) #Send reply
 					elif VarValue.startswith('ManFade'):
+						self.KillLights()
 						try:
 							Colours = SepDataz.split(".")
 							print (Colours)
-							try:
-								self.KillLights()
-							except:
-								print ("PILights ",VarValue)
-								global  R, G, B, R2, G2, B2
-								TmpR = R
-								TmpG = G
-								TmpB = B
-								R = R2
-								G = G2
-								B = B2
-								R2 = TmpR
-								G2 = TmpG
-								B2 = TmpB
-								if VarValue == "ManFade.Switch":
-									process = subprocess.Popen(["python3.4", "/home/pi/bin/Python/MoteScripts/moteFade.py",R,G,B,R2,G2,B2])
-									self.wfile.write(("PiLights ","Switch ",R2," ",G2," ",B2, " x ", R," ",G," ",B)) #Send reply
-								else:
-									R = Colours[1]
-									G = Colours[2]
-									B = Colours[3]
-									R2 = Colours[4]
-									G2 = Colours[5]
-									B2 = Colours[6]
-									process = subprocess.Popen(["python3.4", "/home/pi/bin/Python/MoteScripts/moteFade.py",R,G,B,R2,G2,B2])
-									self.wfile.write(("PiLights ",VarValue," ",R," ",G," ",B," x ",R2," ",G2," ",B2)) #Send reply
-						except:
-							print ("RGB Colour error!")
-					elif VarValue.startswith('Man'):
-						try:
-							Colours = SepDataz.split(".")
-							print (Colours)
-							try:
-								self.KillLights()
-							except:
-								print ("PILights ",VarValue)
+							print ("PILights ",VarValue)
+							global  R, G, B, R2, G2, B2
+							TmpR = R
+							TmpG = G
+							TmpB = B
+							R = R2
+							G = G2
+							B = B2
+							R2 = TmpR
+							G2 = TmpG
+							B2 = TmpB
+							if VarValue == "ManFade.Switch":
+								process = subprocess.Popen(["python3.4", "/home/pi/bin/Python/MoteScripts/moteFade.py",R,G,B,R2,G2,B2])
+								self.wfile.write(("PiLights ","Switch ",R2," ",G2," ",B2, " x ", R," ",G," ",B)) #Send reply
+							else:
 								R = Colours[1]
 								G = Colours[2]
 								B = Colours[3]
-								process = subprocess.Popen(["python3.4", "/home/pi/bin/Python/MoteScripts/manualSet.py",R,G,B])
-								self.wfile.write(("PiLights ",VarValue," ",R," ",G," ",B)) #Send reply
+								R2 = Colours[4]
+								G2 = Colours[5]
+								B2 = Colours[6]
+								process = subprocess.Popen(["python3.4", "/home/pi/bin/Python/MoteScripts/moteFade.py",R,G,B,R2,G2,B2])
+								self.wfile.write(("PiLights ",VarValue," ",R," ",G," ",B," x ",R2," ",G2," ",B2)) #Send reply
+						except:
+							print ("RGB Colour error!")
+					elif VarValue.startswith('Man'): #Add regex here
+						try:
+							Colours = SepDataz.split(".")
+							print (Colours)
+							self.KillLights()
+							print ("PILights ",VarValue)
+							R = Colours[1]
+							G = Colours[2]
+							B = Colours[3]
+							process = subprocess.Popen(["python3.4", "/home/pi/bin/Python/MoteScripts/manualSet.py",R,G,B])
+							self.wfile.write(("PiLights ",VarValue," ",R," ",G," ",B)) #Send reply
 						except:
 							print ("RGB Colour error!")
 					else:
-						try:
-							self.KillLights()
-						except:
-							print ("No task running")
+						print ("Command Unknown")
+						self.wfile.write(("PiLights Command Unknown!"))
 		except IndexError:
 			print ("Var does not fit format")
 		
@@ -209,24 +209,19 @@ class S(BaseHTTPRequestHandler):
 		print ("")
 
 def run(server_class=HTTPServer, handler_class=S, port=666):
-	global process
 	try:
 		server_address = ('', port)
 		httpd = server_class(server_address, handler_class)
 		print ('Starting Server...')
+		sa = httpd.socket.getsockname()
+		print ("Serving on {0}:{1}").format(sa[0],sa[1])
 		httpd.serve_forever()
 	except KeyboardInterrupt:
 		print("Interrupt received, stopping...")
 	finally:
-		#os.kill(process.pid, signal.SIGINT)
 		os.system('clear')
 		print ("RIP Pi Lights")
-		try:
-			self.KillLights()
-		except:
-			print ("Failed to kill standard way btw...")
-			motephat.clear()
-			motephat.show()
+		S.KillLights #Call it from the classhttpserver-on
 		quit()
 		sys.exit()
 
