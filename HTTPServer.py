@@ -45,6 +45,7 @@ class S(BaseHTTPRequestHandler):
 		global process
 		if process == "": #Because it is set as a string above to stop NameError (Calling before defined)
 			print ("PiLights are not running...")
+			return
 		else:
 			print ("PILights are running... Killing...")
 			process.terminate()
@@ -53,6 +54,7 @@ class S(BaseHTTPRequestHandler):
 			motephat.show()
 			process = subprocess.call(["python3.4", "/home/pi/bin/Python/MoteScripts/moteOff.py"])
 			process = ""
+			return
 	
 	def hex_to_rgb(self,value): #This will be handled this side instead going forward
 		value = value.lstrip('#')
@@ -204,7 +206,6 @@ class S(BaseHTTPRequestHandler):
 						self.wfile.write(("PiLights Command Unknown!"))
 		except IndexError:
 			print ("Var does not fit format")
-		
 		print ("********End POST********")
 		print ("")
 
