@@ -3,6 +3,7 @@
 Very simple HTTP server in python.
 Usage:
 	 ./HTTPserver.py [<port>]
+Test
 """
 
 if True: #Need a way of checking this...
