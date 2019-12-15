@@ -45,20 +45,20 @@ class Server(BaseHTTPRequestHandler):
         
 def run(server_class=HTTPServer, handler_class=Server, port=8008):
     try:
-		server_address = ('', port)
-		httpd = server_class(server_address, handler_class)
-		print ('Starting Server...')
-		sa = httpd.socket.getsockname()
-		print ("Serving on {0}:{1}").format(sa[0],sa[1])
-		httpd.serve_forever()
-	except KeyboardInterrupt:
-		print("Interrupt received, stopping...")
-	finally:
-		#os.system('clear')
-		print ("RIP Pi Lights")
-		S.KillLights #Call it from the classhttpserver-on
-		quit()
-		sys.exit()
+        server_address = ('', port)
+        httpd = server_class(server_address, handler_class)
+        print ('Starting Server...')
+        sa = httpd.socket.getsockname()
+        print ("Serving on {0}:{1}").format(sa[0],sa[1])
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        print("Interrupt received, stopping...")
+    finally:
+        #os.system('clear')
+        print ("RIP Pi Lights")
+        Server.KillLights #Call it from the classhttpserver-on
+        quit()
+        sys.exit()
     
 if __name__ == "__main__":
     from sys import argv
