@@ -1,10 +1,25 @@
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
-import SocketServer
+from http.server import BaseHTTPRequestHandler, HTTPServer
+import socketserver
 import json
 import cgi
 
 class Server(BaseHTTPRequestHandler):
 # Declare all of the Class Vars here
+
+    def KillLights(self):
+        global process
+        if process == "": #Because it is set as a string above to stop NameError (Calling before defined)
+            print ("PiLights are not running...")
+            return
+        else:
+            print ("PILights are running... Killing...")
+            process.terminate()
+            process.kill()
+            motephat.clear()
+            motephat.show()
+            process = subprocess.call(["python3", "/home/pi/bin/Python/MoteScripts/moteOff.py"])
+            process = ""
+            return
 
     def _set_headers(self):
         self.send_response(200)
@@ -44,21 +59,12 @@ class Server(BaseHTTPRequestHandler):
         self.wfile.write(json.dumps(message))
         
 def run(server_class=HTTPServer, handler_class=Server, port=8008):
-    try:
-        server_address = ('', port)
-        httpd = server_class(server_address, handler_class)
-        print ('Starting Server...')
-        sa = httpd.socket.getsockname()
-        print ("Serving on {0}:{1}").format(sa[0],sa[1])
-        httpd.serve_forever()
-    except KeyboardInterrupt:
-        print("Interrupt received, stopping...")
-    finally:
-        #os.system('clear')
-        print ("RIP Pi Lights")
-        Server.KillLights #Call it from the classhttpserver-on
-        quit()
-        sys.exit()
+    server_address = ('', port)
+    httpd = server_class(server_address, handler_class)
+    print ('Starting Server...')
+    sa = httpd.server_address
+    print (f"Serving on {sa[0]}:{sa[1]}")
+    httpd.serve_forever()
     
 if __name__ == "__main__":
     from sys import argv
