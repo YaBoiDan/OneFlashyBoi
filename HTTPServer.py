@@ -2,7 +2,7 @@
 """
 Very simple HTTP server in python.
 Usage:
-	 ./HTTPserver.py [<port>]
+	./HTTPserver.py [<port>]
 Test
 """
 
@@ -26,7 +26,7 @@ import re
 global Dataz,process, MoteApp, MoteAppLoc, R, G, B, R2, G2, B2 #We need to make them global variables so they can be read inside the function.
 process = ""
 MoteApp = ""
-MoteAppLoc = "/home/pi/bin/Python/MoteScripts/"
+MoteAppLoc = "motescripts/"
 Dataz = "Nil"
 dict = {}
 R = 0 #We need these otherwise it flags as accessing a variable before it is defined (See the layout of 'Switch')
@@ -53,7 +53,7 @@ class S(BaseHTTPRequestHandler):
 			process.kill()
 			motephat.clear()
 			motephat.show()
-			process = subprocess.call(["python3.4", "/home/pi/bin/Python/MoteScripts/moteOff.py"])
+			process = subprocess.call(["python3", "motescripts/moteOff.py"])
 			process = ""
 			return
 	
@@ -81,6 +81,7 @@ class S(BaseHTTPRequestHandler):
 			AllVars = VarReq.split(";")
 			dicVarReq = ""
 			for i in AllVars:
+
 				print ("Var: ",i)
 				try:
 					dicVarReq = dicVarReq + i + "=" + dict[i] +";"
@@ -136,28 +137,28 @@ class S(BaseHTTPRequestHandler):
 							Brightness = SepDataz.split(".")
 							Brightness = float(Brightness[1])/10 #Receives brightness 1-10
 							print ("Brightness: " ,Brightness)
-							process = subprocess.call(["python3.4", "/home/pi/bin/Python/MoteScripts/moteOnW.py",str(Brightness)]) #Must be passed as string
+							process = subprocess.call(["python3", "motescripts/moteOnW.py",str(Brightness)]) #Must be passed as string
 							#MoteApp = "'moteOn{0}.py',{1}'".format(RGBW,str(Brightness)) #Brightness Must be passed as string #Test this...
 						else:
 							#MoteApp = "moteOn{0}.py".format(RGBW)
-							process = subprocess.Popen(["python3.4", "/home/pi/bin/Python/MoteScripts/moteOn.py"])
+							process = subprocess.Popen(["python3", "motescripts/moteOn.py"])
 						self.wfile.write(("PiLights ",VarValue)) #Send reply
 					elif VarValue == "Off":
 						self.KillLights()
 					elif VarValue == "Rainbow":
 						self.KillLights()
 						print ("PILights ",VarValue)
-						process = subprocess.Popen(["python3.4", "/home/pi/bin/Python/MoteScripts/rainbow.py"])
+						process = subprocess.Popen(["python3", "motescripts/rainbow.py"])
 						self.wfile.write(("PiLights ",VarValue)) #Send reply
 					elif VarValue == "Bilge":
 						self.KillLights()
 						print ("PILights ",VarValue)
-						process = subprocess.Popen(["python3.4", "/home/pi/bin/Python/MoteScripts/bilgetank.py"])
+						process = subprocess.Popen(["python3", "motescripts/bilgetank.py"])
 						self.wfile.write(("PiLights ",VarValue)) #Send reply
 					elif VarValue == "Hell":
 						self.KillLights()
 						print ("PILights ",VarValue)
-						process = subprocess.Popen(["python3.4", "/home/pi/bin/Python/MoteScripts/helltank.py"])
+						process = subprocess.Popen(["python3", "motescripts/helltank.py"])
 						self.wfile.write(("PiLights ",VarValue)) #Send reply
 					elif VarValue.startswith('ManFade'):
 						self.KillLights()
@@ -176,7 +177,7 @@ class S(BaseHTTPRequestHandler):
 							G2 = TmpG
 							B2 = TmpB
 							if VarValue == "ManFade.Switch":
-								process = subprocess.Popen(["python3.4", "/home/pi/bin/Python/MoteScripts/moteFade.py",R,G,B,R2,G2,B2])
+								process = subprocess.Popen(["python3", "motescripts/moteFade.py",R,G,B,R2,G2,B2])
 								self.wfile.write(("PiLights ","Switch ",R2," ",G2," ",B2, " x ", R," ",G," ",B)) #Send reply
 							else:
 								R = Colours[1]
@@ -185,7 +186,7 @@ class S(BaseHTTPRequestHandler):
 								R2 = Colours[4]
 								G2 = Colours[5]
 								B2 = Colours[6]
-								process = subprocess.Popen(["python3.4", "/home/pi/bin/Python/MoteScripts/moteFade.py",R,G,B,R2,G2,B2])
+								process = subprocess.Popen(["python3", "motescripts/moteFade.py",R,G,B,R2,G2,B2])
 								self.wfile.write(("PiLights ",VarValue," ",R," ",G," ",B," x ",R2," ",G2," ",B2)) #Send reply
 						except:
 							print ("RGB Colour error!")
@@ -198,7 +199,7 @@ class S(BaseHTTPRequestHandler):
 							R = Colours[1]
 							G = Colours[2]
 							B = Colours[3]
-							process = subprocess.Popen(["python3.4", "/home/pi/bin/Python/MoteScripts/manualSet.py",R,G,B])
+							process = subprocess.Popen(["python3", "motescripts/manualSet.py",R,G,B])
 							self.wfile.write(("PiLights ",VarValue," ",R," ",G," ",B)) #Send reply
 						except:
 							print ("RGB Colour error!")
