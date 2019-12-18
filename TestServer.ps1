@@ -11,22 +11,22 @@ $ManualModeJSON = @"
     "Sticks": [
         {
             "StickID": "1",
-            "Colour": "RRGGBB",
+            "Colour": "#FF0000",
             "Brightness" : "1"
         },
         {
             "StickID": "2",
-            "Colour": "RRGGBB",
+            "Colour": "#FF0000",
             "Brightness" : "1"
         },
         {
             "StickID": "3",
-            "Colour": "RRGGBB",
+            "Colour": "#FF0000",
             "Brightness" : "1"
         },
         {
             "StickID": "4",
-            "Colour": "RRGGBB",
+            "Colour": "#FF0000",
             "Brightness" : "1"
         }
     ]
@@ -56,4 +56,4 @@ $Response = Invoke-WebRequest @Params
 $Response.content | ConvertFrom-Json
 
 #Manual
-Invoke-WebRequest -Uri 192.168.2.211:666 -Method POST -ContentType application/json -Body '{"Mode": "Manual","Sticks": [ { "StickID": "1", "Colour": "RRGGBB", "Brightness" : "1" }, { "StickID": "2", "Colour": "RRGGBB", "Brightness" : "1" }, { "StickID": "3", "Colour": "RRGGBB", "Brightness" : "1" }, { "StickID": "4", "Colour": "RRGGBB", "Brightness" : "1" }]}'
+Invoke-WebRequest -Uri 192.168.2.211:666 -Method POST -ContentType application/json -Body '{"Mode": "Manual","Sticks": [ { "StickID": "1", "Colour": "#FF0000", "Brightness" : "1" }, { "StickID": "2", "Colour": "#FF0000", "Brightness" : "1" }, { "StickID": "3", "Colour": "#FF0000", "Brightness" : "1" }, { "StickID": "4", "Colour": "#FF0000", "Brightness" : "1" }]}'
