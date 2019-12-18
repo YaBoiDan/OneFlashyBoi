@@ -25,6 +25,11 @@ class Server(BaseHTTPRequestHandler):
             Process = ""
             return
 
+    def hex_to_rgb(self,value):
+        value = value.lstrip('#')
+        RGB = tuple(int(value[i:i+2], 16) for i in (0, 2, 4))
+        return RGB
+
     def _set_headers(self):
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
@@ -60,12 +65,79 @@ class Server(BaseHTTPRequestHandler):
         ReceivedData = json.loads(self.rfile.read(length))
         
         print (f"> Received Data: {ReceivedData}")
-        print (ReceivedData["Mode"]) #Debug
+        Mode = ReceivedData["Mode"]
+        #print (Mode) #Debug
 
         """
         # add a property to the object, just to mess with data
         ReceivedData['Received'] = 'ok'
         """
+
+        """ 
+        [Mode]     :   [On / Off / etc]
+        [Sticks]   :   [Container]
+            [Stick 1]  :   [RRGGBB / Blank if per LED]
+                [LED0] :   [RRGGBB(Brightness 0.1-1)]
+                [LED1] :   [RRGGBB(Brightness 0.1-1)]
+                [LEDx] :   [RRGGBB(Brightness 0.1-1)]
+            [Stick 2]  :   [RRGGBB(Brightness 0.1-1)]
+                [LED0] :   [RRGGBB(Brightness 0.1-1)]
+                [LED1] :   [RRGGBB(Brightness 0.1-1)]
+                [LEDx] :   [RRGGBB(Brightness 0.1-1)]
+            [Stick 3]  :   [RRGGBB(Brightness 0.1-1)]
+            [Stick 4]  :   [RRGGBB(Brightness 0.1-1)]
+        """
+
+        if Mode == "On":
+            print (f"DEBUG: We hit {Mode}!")
+            self.KillLights()
+            Process = subprocess.Popen(["python3", "motescripts/moteOn.py"])
+            print (Process)
+        elif Mode == "Off":
+            print (f"DEBUG: We hit {Mode}!")
+            self.KillLights()
+        elif Mode == "Rainbow":
+            print (f"DEBUG: We hit {Mode}!")
+            Process = subprocess.Popen(["python3", "motescripts/rainbow.py"])
+            self.KillLights()
+        elif Mode == "RainbowStatic":
+            print (f"DEBUG: We hit {Mode}!")
+            Process = subprocess.Popen(["python3", "motescripts/static-rainbow.py"])
+            self.KillLights()
+        elif Mode == "Bilge":
+            print (f"DEBUG: We hit {Mode}!")
+            self.KillLights()
+            Process = subprocess.Popen(["python3", "motescripts/bilgetank.py"])
+        elif Mode == "Reload":
+            print (f"DEBUG: We hit {Mode}!")
+            self.KillLights()
+            os.execl(sys.executable, 'python', __file__, *sys.argv[1:])
+        elif Mode == "Manual":
+            print (f"DEBUG: We hit {Mode}!")
+            #ReceivedData["Mode"]
+            #for Stick in ReceivedData["Sticks"]:
+            dicts = {}
+
+            for num, Stick in enumerate (ReceivedData["Sticks"], start=1):
+                print (Stick["Colour"])
+                RGB = self.hex_to_rgb(Stick["Colour"])
+                #print (RGB)
+                #print (RGB[0])
+                dicts[("R"+str(num))] = str(RGB[0])
+                dicts[("G"+str(num))] = str(RGB[1])
+                dicts[("B"+str(num))] = str(RGB[2])
+
+            print(dicts["R1"])
+            #print (dicts["R1"],dicts["G1"],dicts["B1"],dicts["R2"],dicts["G2"],dicts["B2"])
+
+            Process = subprocess.Popen([
+                "python3", 
+                "motescripts/moteManual.py",
+                dicts["R1"],dicts["G1"],dicts["B1"],
+                dicts["R2"],dicts["G2"],dicts["B2"],
+                dicts["R3"],dicts["G3"],dicts["B3"],
+                dicts["R4"],dicts["G4"],dicts["B4"]
+            ])
 
         # send the message back
         self._set_headers()
