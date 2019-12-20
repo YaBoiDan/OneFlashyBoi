@@ -96,6 +96,10 @@ class Server(BaseHTTPRequestHandler):
         elif Mode == "Off":
             print (f"DEBUG: We hit {Mode}!")
             self.KillLights()
+        elif Mode == "ClearAnyway":
+            self.KillLights()
+        #elif Mode == "ClearAnyway+Force":
+            #Run clear, this is for when a process isn't running but you wanna clear. Also task kill anything under the 'motescript' directory for sure.
         elif Mode == "Rainbow":
             print (f"DEBUG: We hit {Mode}!")
             Process = subprocess.Popen(["python3", "motescripts/rainbow.py"])
@@ -114,30 +118,43 @@ class Server(BaseHTTPRequestHandler):
             os.execl(sys.executable, 'python', __file__, *sys.argv[1:])
         elif Mode == "Manual":
             print (f"DEBUG: We hit {Mode}!")
-            #ReceivedData["Mode"]
-            #for Stick in ReceivedData["Sticks"]:
             dicts = {}
 
             for num, Stick in enumerate (ReceivedData["Sticks"], start=1):
-                print (Stick["Colour"])
-                RGB = self.hex_to_rgb(Stick["Colour"])
-                #print (RGB)
-                #print (RGB[0])
-                dicts[("R"+str(num))] = str(RGB[0])
-                dicts[("G"+str(num))] = str(RGB[1])
-                dicts[("B"+str(num))] = str(RGB[2])
+                if Stick.get("Colour"):
+                    print (Stick["Colour"])
+                    RGB = self.hex_to_rgb(Stick["Colour"])
+                    #print (RGB)
+                    dicts[("R"+str(num))] = str(RGB[0])
+                    dicts[("G"+str(num))] = str(RGB[1])
+                    dicts[("B"+str(num))] = str(RGB[2])
+                else:
+                    print (">>>Hit Super Manual")
+                    """ for PNum, Pixel in enumerate (Stick["Pixels"], start=1):
+                        RGB = self.hex_to_rgb(Pixel["Colour"])
+                        #print (RGB)
+                        dicts[("R"+str(num)+"-"+str(PNum))] = str(RGB[0])
+                        dicts[("G"+str(num)+"-"+str(PNum))] = str(RGB[1])
+                        dicts[("B"+str(num)+"-"+str(PNum))] = str(RGB[2]) """
+                        
+                    print (Stick["Pixels"])
 
-            print(dicts["R1"])
-            #print (dicts["R1"],dicts["G1"],dicts["B1"],dicts["R2"],dicts["G2"],dicts["B2"])
+                    for key, value in ReceivedData["Sticks"] :
+                        print (key, value)
+            #print (dicts)
 
-            Process = subprocess.Popen([
-                "python3", 
-                "motescripts/moteManual.py",
-                dicts["R1"],dicts["G1"],dicts["B1"],
-                dicts["R2"],dicts["G2"],dicts["B2"],
-                dicts["R3"],dicts["G3"],dicts["B3"],
-                dicts["R4"],dicts["G4"],dicts["B4"]
-            ])
+            print (ReceivedData["Sticks"][0]["Colour"])
+            if ReceivedData["Sticks"]["Colour"]:
+                Process = subprocess.Popen([
+                    "python3", 
+                    "motescripts/moteManual.py",
+                    dicts["R1"],dicts["G1"],dicts["B1"],
+                    dicts["R2"],dicts["G2"],dicts["B2"],
+                    dicts["R3"],dicts["G3"],dicts["B3"],
+                    dicts["R4"],dicts["G4"],dicts["B4"]
+                ])
+            else:
+                print (">>>SuperManual send to file")
 
         # send the message back
         self._set_headers()
