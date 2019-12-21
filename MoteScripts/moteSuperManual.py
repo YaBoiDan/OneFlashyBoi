@@ -23,7 +23,7 @@ for stick in range (4):
 		AAA += 3
 		
 		print (f"{argv[PixelRArg]}, {argv[PixelGArg]}, {argv[PixelBArg]}")
-		motephat.set_pixel (stick, pixel, argv[PixelRArg], argv[PixelGArg], argv[PixelBArg], brightness=0.2)
+		motephat.set_pixel (stick, pixel, argv[PixelRArg], argv[PixelGArg], argv[PixelBArg], brightness=1)
 		# motephat.show()
 		# time.sleep (0.25)
 motephat.show()

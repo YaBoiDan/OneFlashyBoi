@@ -10,5 +10,5 @@ motephat.set_clear_on_exit(False)
 
 for channel in range(1, 5):
     for pixel in range(16):
-        motephat.set_pixel(channel, pixel, 255, 46, 0,brightness=0.2)
+        motephat.set_pixel(channel, pixel, 255, 46, 0,brightness=1)
 motephat.show()
