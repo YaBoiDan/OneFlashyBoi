@@ -1,5 +1,4 @@
 import motephat
-import time
 from sys import argv
 
 if len(argv) != 4:

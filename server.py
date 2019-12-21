@@ -119,31 +119,18 @@ class Server(BaseHTTPRequestHandler):
         elif Mode == "Manual":
             print (f"DEBUG: We hit {Mode}!")
             dicts = {}
+            self.KillLights()
 
-            for num, Stick in enumerate (ReceivedData["Sticks"], start=1):
-                if Stick.get("Colour"):
+            if "Colour" in ReceivedData["Sticks"][0]: #If stick one has a colour defined rather than per pixel defined.
+                for num, Stick in enumerate (ReceivedData["Sticks"], start=1): #Enumerate and build dictionary of values.
                     print (Stick["Colour"])
-                    RGB = self.hex_to_rgb(Stick["Colour"])
+                    RGB = self.hex_to_rgb(Stick["Colour"]) #Convert to RGB from Hex
                     #print (RGB)
                     dicts[("R"+str(num))] = str(RGB[0])
                     dicts[("G"+str(num))] = str(RGB[1])
                     dicts[("B"+str(num))] = str(RGB[2])
-                else:
-                    print (">>>Hit Super Manual")
-                    """ for PNum, Pixel in enumerate (Stick["Pixels"], start=1):
-                        RGB = self.hex_to_rgb(Pixel["Colour"])
-                        #print (RGB)
-                        dicts[("R"+str(num)+"-"+str(PNum))] = str(RGB[0])
-                        dicts[("G"+str(num)+"-"+str(PNum))] = str(RGB[1])
-                        dicts[("B"+str(num)+"-"+str(PNum))] = str(RGB[2]) """
-                        
-                    #print (Stick["Pixels"])
-            #print (dicts)
-
-            print (ReceivedData["Sticks"][0]["Pixels"][0]["Colour"])
-            if "Colour" in ReceivedData["Sticks"][0]: #If stick one has a colour defined rather than per pixel defined.
-                #Move this up and the loop under if works.
-                Process = subprocess.Popen([
+                
+                Process = subprocess.Popen([ #Pass args to manual mote script
                     "python3", 
                     "motescripts/moteManual.py",
                     dicts["R1"],dicts["G1"],dicts["B1"],
@@ -151,12 +138,97 @@ class Server(BaseHTTPRequestHandler):
                     dicts["R3"],dicts["G3"],dicts["B3"],
                     dicts["R4"],dicts["G4"],dicts["B4"]
                 ])
-            else:
-                print (">>>SuperManual send to file")
+
+            else: #If no colour per stick is set, assume pixels
+                if "Colour" in ReceivedData["Sticks"][0]["Pixels"][0]: #Check first pixel for colour, basic test but happens before per pixel enumeration.
+                    print (">>>Hit Super Manual")
+                    for num, Stick in enumerate (ReceivedData["Sticks"], start=1):
+                        for PNum, Pixel in enumerate (Stick["Pixels"], start=1):
+                            RGB = self.hex_to_rgb(Pixel["Colour"])
+                            #print (RGB)
+                            dicts[("R"+str(num)+"-"+str(PNum))] = str(RGB[0])
+                            dicts[("G"+str(num)+"-"+str(PNum))] = str(RGB[1])
+                            dicts[("B"+str(num)+"-"+str(PNum))] = str(RGB[2])
+                    #Try itterating through, if value not defined, return malformed request. Try triggering this by not setting a single pixel value per stick?
+                    #print (dicts)
+                    #Not sure I like passing 193 args to a script...
+                    Process = subprocess.Popen([ #Pass args to manual mote script
+                    "python3", 
+                    "motescripts/moteSuperManual.py",
+                    dicts["R1-1"], dicts["G1-1"], dicts["B1-1"],
+                    dicts["R1-2"], dicts["G1-2"], dicts["B1-2"],
+                    dicts["R1-3"], dicts["G1-3"], dicts["B1-3"],
+                    dicts["R1-4"], dicts["G1-4"], dicts["B1-4"],
+                    dicts["R1-5"], dicts["G1-5"], dicts["B1-5"],
+                    dicts["R1-6"], dicts["G1-6"], dicts["B1-6"],
+                    dicts["R1-7"], dicts["G1-7"], dicts["B1-7"],
+                    dicts["R1-8"], dicts["G1-8"], dicts["B1-8"],
+                    dicts["R1-9"], dicts["G1-9"], dicts["B1-9"],
+                    dicts["R1-10"], dicts["G1-10"], dicts["B1-10"],
+                    dicts["R1-11"], dicts["G1-11"], dicts["B1-11"],
+                    dicts["R1-12"], dicts["G1-12"], dicts["B1-12"],
+                    dicts["R1-13"], dicts["G1-13"], dicts["B1-13"],
+                    dicts["R1-14"], dicts["G1-14"], dicts["B1-14"],
+                    dicts["R1-15"], dicts["G1-15"], dicts["B1-15"],
+                    dicts["R1-16"], dicts["G1-16"], dicts["B1-16"],
+                    dicts["R2-1"], dicts["G2-1"], dicts["B2-1"],
+                    dicts["R2-2"], dicts["G2-2"], dicts["B2-2"],
+                    dicts["R2-3"], dicts["G2-3"], dicts["B2-3"],
+                    dicts["R2-4"], dicts["G2-4"], dicts["B2-4"],
+                    dicts["R2-5"], dicts["G2-5"], dicts["B2-5"],
+                    dicts["R2-6"], dicts["G2-6"], dicts["B2-6"],
+                    dicts["R2-7"], dicts["G2-7"], dicts["B2-7"],
+                    dicts["R2-8"], dicts["G2-8"], dicts["B2-8"],
+                    dicts["R2-9"], dicts["G2-9"], dicts["B2-9"],
+                    dicts["R2-10"], dicts["G2-10"], dicts["B2-10"],
+                    dicts["R2-11"], dicts["G2-11"], dicts["B2-11"],
+                    dicts["R2-12"], dicts["G2-12"], dicts["B2-12"],
+                    dicts["R2-13"], dicts["G2-13"], dicts["B2-13"],
+                    dicts["R2-14"], dicts["G2-14"], dicts["B2-14"],
+                    dicts["R2-15"], dicts["G2-15"], dicts["B2-15"],
+                    dicts["R2-16"], dicts["G2-16"], dicts["B2-16"],
+                    dicts["R3-1"], dicts["G3-1"], dicts["B3-1"],
+                    dicts["R3-2"], dicts["G3-2"], dicts["B3-2"],
+                    dicts["R3-3"], dicts["G3-3"], dicts["B3-3"],
+                    dicts["R3-4"], dicts["G3-4"], dicts["B3-4"],
+                    dicts["R3-5"], dicts["G3-5"], dicts["B3-5"],
+                    dicts["R3-6"], dicts["G3-6"], dicts["B3-6"],
+                    dicts["R3-7"], dicts["G3-7"], dicts["B3-7"],
+                    dicts["R3-8"], dicts["G3-8"], dicts["B3-8"],
+                    dicts["R3-9"], dicts["G3-9"], dicts["B3-9"],
+                    dicts["R3-10"], dicts["G3-10"], dicts["B3-10"],
+                    dicts["R3-11"], dicts["G3-11"], dicts["B3-11"],
+                    dicts["R3-12"], dicts["G3-12"], dicts["B3-12"],
+                    dicts["R3-13"], dicts["G3-13"], dicts["B3-13"],
+                    dicts["R3-14"], dicts["G3-14"], dicts["B3-14"],
+                    dicts["R3-15"], dicts["G3-15"], dicts["B3-15"],
+                    dicts["R3-16"], dicts["G3-16"], dicts["B3-16"],
+                    dicts["R4-1"], dicts["G4-1"], dicts["B4-1"],
+                    dicts["R4-2"], dicts["G4-2"], dicts["B4-2"],
+                    dicts["R4-3"], dicts["G4-3"], dicts["B4-3"],
+                    dicts["R4-4"], dicts["G4-4"], dicts["B4-4"],
+                    dicts["R4-5"], dicts["G4-5"], dicts["B4-5"],
+                    dicts["R4-6"], dicts["G4-6"], dicts["B4-6"],
+                    dicts["R4-7"], dicts["G4-7"], dicts["B4-7"],
+                    dicts["R4-8"], dicts["G4-8"], dicts["B4-8"],
+                    dicts["R4-9"], dicts["G4-9"], dicts["B4-9"],
+                    dicts["R4-10"], dicts["G4-10"], dicts["B4-10"],
+                    dicts["R4-11"], dicts["G4-11"], dicts["B4-11"],
+                    dicts["R4-12"], dicts["G4-12"], dicts["B4-12"],
+                    dicts["R4-13"], dicts["G4-13"], dicts["B4-13"],
+                    dicts["R4-14"], dicts["G4-14"], dicts["B4-14"],
+                    dicts["R4-15"], dicts["G4-15"], dicts["B4-15"],
+                    dicts["R4-16"], dicts["G4-16"], dicts["B4-16"]
+                ])
+                else:
+                    print (">>>Malformed manual request")
+                    raise Exception("Malformed manual request, check JSON")
+
+            #print (dicts)
 
         # send the message back
         self._set_headers()
-        self.wfile.write(json.dumps(ReceivedData).encode())
+        self.wfile.write(json.dumps(ReceivedData).encode()) #Parrot
         
 def run(server_class=HTTPServer, handler_class=Server, port=666):
     try:
