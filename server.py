@@ -137,14 +137,12 @@ class Server(BaseHTTPRequestHandler):
                         dicts[("G"+str(num)+"-"+str(PNum))] = str(RGB[1])
                         dicts[("B"+str(num)+"-"+str(PNum))] = str(RGB[2]) """
                         
-                    print (Stick["Pixels"])
-
-                    for key, value in ReceivedData["Sticks"] :
-                        print (key, value)
+                    #print (Stick["Pixels"])
             #print (dicts)
 
-            print (ReceivedData["Sticks"][0]["Colour"])
-            if ReceivedData["Sticks"]["Colour"]:
+            print (ReceivedData["Sticks"][0]["Pixels"][0]["Colour"])
+            if "Colour" in ReceivedData["Sticks"][0]: #If stick one has a colour defined rather than per pixel defined.
+                #Move this up and the loop under if works.
                 Process = subprocess.Popen([
                     "python3", 
                     "motescripts/moteManual.py",
