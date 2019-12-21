@@ -3,6 +3,8 @@ from sys import argv
 
 if len(argv) != 4:
     print ("Not enough Variables")
+    print (len(argv))
+	quit()
 
 motephat.configure_channel(1, 16, False)
 motephat.configure_channel(2, 16, False)
