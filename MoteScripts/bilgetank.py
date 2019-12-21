@@ -7,18 +7,6 @@ from colorsys import hsv_to_rgb
 
 import motephat
 
-
-print("""#BilgeTank
-
-This is the lighting script we use to run the shelves in BilgeTank.
-
-It uses a simple Sine wave to sweep gently between greeny blue and blue, giving a nice oceanic effect!
-
-This is achieved by moving around a portion of a hue wheel, defined by hue_start and hue_range.
-
-Press Ctrl+C to clear and exit.
-""")
-
 # The hue wheel is 360 degrees around, with;
 # 0 = Red
 # 40ish = Orange
@@ -35,6 +23,8 @@ motephat.configure_channel(1, 16, False)
 motephat.configure_channel(2, 16, False)
 motephat.configure_channel(3, 16, False)
 motephat.configure_channel(4, 16, False)
+
+motephat.set_clear_on_exit(False)
 
 try:
     while True:

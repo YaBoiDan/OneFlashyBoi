@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-#Based on work from https://github.com/pimoroni/mote
 
 import math
 import time
@@ -23,6 +22,7 @@ motephat.configure_channel(1, 16, False)
 motephat.configure_channel(2, 16, False)
 motephat.configure_channel(3, 16, False)
 motephat.configure_channel(4, 16, False)
+motephat.set_clear_on_exit(False)
 
 try:
     while True:

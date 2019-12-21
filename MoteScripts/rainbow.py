@@ -6,16 +6,11 @@ from colorsys import hsv_to_rgb
 
 import motephat as mote
 
-
-print("""Rainbow
-
-Press Ctrl+C to exit.
-""")
-
 mote.configure_channel(1, 16, False)
 mote.configure_channel(2, 16, False)
 mote.configure_channel(3, 16, False)
 mote.configure_channel(4, 16, False)
+motephat.set_clear_on_exit(False)
 
 try:
     while True:

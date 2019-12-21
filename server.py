@@ -6,6 +6,8 @@ import subprocess
 import sys
 import os
 
+#Scripts have been appended to not clear after launch where possible, this negates the requirement to keep them in loops unless they need to change dynamically. Optionally you can also remove the 'Process' from these, although you will need to run clear by default save getting caught with colour mixing. Additionally, this should mean that if you somehow manage to launch two processes, they won't overwrite as they aren't both still running in loops.
+
 global Process
 Process = ""
 
@@ -92,22 +94,24 @@ class Server(BaseHTTPRequestHandler):
             print (f"DEBUG: We hit {Mode}!")
             self.KillLights()
             Process = subprocess.Popen(["python3", "motescripts/moteOn.py"])
-            print (Process)
         elif Mode == "Off":
             print (f"DEBUG: We hit {Mode}!")
             self.KillLights()
         elif Mode == "ClearAnyway":
-            self.KillLights()
+            Process = subprocess.call(["python3", "motescripts/moteOff.py"])
+            Process = ""
+            #Reload and clear usually fixes things
+            return
         #elif Mode == "ClearAnyway+Force":
             #Run clear, this is for when a process isn't running but you wanna clear. Also task kill anything under the 'motescript' directory for sure.
         elif Mode == "Rainbow":
             print (f"DEBUG: We hit {Mode}!")
-            Process = subprocess.Popen(["python3", "motescripts/rainbow.py"])
             self.KillLights()
+            Process = subprocess.Popen(["python3", "motescripts/rainbow.py"])
         elif Mode == "RainbowStatic":
             print (f"DEBUG: We hit {Mode}!")
-            Process = subprocess.Popen(["python3", "motescripts/static-rainbow.py"])
             self.KillLights()
+            Process = subprocess.Popen(["python3", "motescripts/static-rainbow.py"])
         elif Mode == "Bilge":
             print (f"DEBUG: We hit {Mode}!")
             self.KillLights()
