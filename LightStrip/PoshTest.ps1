@@ -1,6 +1,6 @@
 $JSON = @"
 {
-    "Mode":"ClearAnyway",
+    "Mode":"Manual",
     "Colour":[{
         "R":"255",
         "G":"0",
