@@ -105,6 +105,11 @@ class Server(BaseHTTPRequestHandler):
             print (f"DEBUG: We hit {Mode}!")
             self.KillLights()
             os.execl(sys.executable, 'python', __file__, *sys.argv[1:])
+        elif Mode == "Repull&Reload":
+            print (f"DEBUG: We hit {Mode}!")
+            self.KillLights()
+            os.execl(sys.executable, 'git', "clone", "https://github.com/YaBoiDan/OneFlashyBoi")
+            os.execl(sys.executable, 'python', __file__, *sys.argv[1:])
         elif Mode == "Manual":
             print (f"DEBUG: We hit {Mode}!")
             self.KillLights()
