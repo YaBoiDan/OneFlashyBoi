@@ -27,11 +27,6 @@ class Server(BaseHTTPRequestHandler):
             Process = ""
             return
 
-    def hex_to_rgb(self,value):
-        value = value.lstrip('#')
-        RGB = tuple(int(value[i:i+2], 16) for i in (0, 2, 4))
-        return RGB
-
     def _set_headers(self):
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
@@ -46,8 +41,8 @@ class Server(BaseHTTPRequestHandler):
         print ('>> Requested Data, GET started')
         self._set_headers()
         self.wfile.write(json.dumps({
-            'hello': 'world',
-            'received': 'ok'
+            'Received': 'ok',
+            'Result': 'This is not the result you were looking for...'
             }).encode())
         
     # POST echoes the message adding a JSON field
@@ -73,21 +68,6 @@ class Server(BaseHTTPRequestHandler):
         """
         # add a property to the object, just to mess with data
         ReceivedData['Received'] = 'ok'
-        """
-
-        """ 
-        [Mode]     :   [On / Off / etc]
-        [Sticks]   :   [Container]
-            [Stick 1]  :   [RRGGBB / Blank if per LED]
-                [LED0] :   [RRGGBB(Brightness 0.1-1)]
-                [LED1] :   [RRGGBB(Brightness 0.1-1)]
-                [LEDx] :   [RRGGBB(Brightness 0.1-1)]
-            [Stick 2]  :   [RRGGBB(Brightness 0.1-1)]
-                [LED0] :   [RRGGBB(Brightness 0.1-1)]
-                [LED1] :   [RRGGBB(Brightness 0.1-1)]
-                [LEDx] :   [RRGGBB(Brightness 0.1-1)]
-            [Stick 3]  :   [RRGGBB(Brightness 0.1-1)]
-            [Stick 4]  :   [RRGGBB(Brightness 0.1-1)]
         """
 
         if Mode == "On":
