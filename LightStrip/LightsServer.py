@@ -12,7 +12,8 @@ global Process
 Process = ""
 
 class Server(BaseHTTPRequestHandler):
-# Declare all of the Class Vars here
+    # Declare all of the Class Vars here
+    CurrentState = "Off"
 
     def KillLights(self):
         global Process
@@ -25,12 +26,8 @@ class Server(BaseHTTPRequestHandler):
             Process.kill()
             Process = subprocess.call(["python3", "LEDScripts/Off.py"])
             Process = ""
+            CurrentState = "Off"
             return
-
-    def hex_to_rgb(self,value):
-        value = value.lstrip('#')
-        RGB = tuple(int(value[i:i+2], 16) for i in (0, 2, 4))
-        return RGB
 
     def _set_headers(self):
         self.send_response(200)
@@ -46,8 +43,8 @@ class Server(BaseHTTPRequestHandler):
         print ('>> Requested Data, GET started')
         self._set_headers()
         self.wfile.write(json.dumps({
-            'hello': 'world',
-            'received': 'ok'
+            'Received': 'ok',
+            'Result': 'This is not the result you were looking for...'
             }).encode())
         
     # POST echoes the message adding a JSON field
@@ -75,25 +72,11 @@ class Server(BaseHTTPRequestHandler):
         ReceivedData['Received'] = 'ok'
         """
 
-        """ 
-        [Mode]     :   [On / Off / etc]
-        [Sticks]   :   [Container]
-            [Stick 1]  :   [RRGGBB / Blank if per LED]
-                [LED0] :   [RRGGBB(Brightness 0.1-1)]
-                [LED1] :   [RRGGBB(Brightness 0.1-1)]
-                [LEDx] :   [RRGGBB(Brightness 0.1-1)]
-            [Stick 2]  :   [RRGGBB(Brightness 0.1-1)]
-                [LED0] :   [RRGGBB(Brightness 0.1-1)]
-                [LED1] :   [RRGGBB(Brightness 0.1-1)]
-                [LEDx] :   [RRGGBB(Brightness 0.1-1)]
-            [Stick 3]  :   [RRGGBB(Brightness 0.1-1)]
-            [Stick 4]  :   [RRGGBB(Brightness 0.1-1)]
-        """
-
         if Mode == "On":
             print (f"DEBUG: We hit {Mode}!")
             self.KillLights()
             Process = subprocess.Popen(["python3", "LEDScripts/On.py"])
+            CurrentState = Mode
         elif Mode == "Off":
             print (f"DEBUG: We hit {Mode}!")
             self.KillLights()
@@ -101,51 +84,64 @@ class Server(BaseHTTPRequestHandler):
             Process = subprocess.call(["python3", "LEDScripts/Off.py"])
             Process = ""
             #Reload and clear usually fixes things
+            CurrentState = "Off"
             return
-        #elif Mode == "ClearAnyway+Force":
-            #Run clear, this is for when a process isn't running but you wanna clear. Also task kill anything under the 'motescript' directory for sure.
         elif Mode == "Rainbow":
             print (f"DEBUG: We hit {Mode}!")
             self.KillLights()
             Process = subprocess.Popen(["python3", "LEDScripts/Rainbow.py"])
+            CurrentState = Mode
         elif Mode == "RainbowR":
             print (f"DEBUG: We hit {Mode}!")
             self.KillLights()
             Process = subprocess.Popen(["python3", "LEDScripts/RainbowR.py"])
+            CurrentState = Mode
         elif Mode == "Bilge":
             print (f"DEBUG: We hit {Mode}!")
             self.KillLights()
             Process = subprocess.Popen(["python3", "LEDScripts/bilgetank.py"])
+            CurrentState = Mode
         elif Mode == "Reload":
             print (f"DEBUG: We hit {Mode}!")
             self.KillLights()
+            os.execl(sys.executable, 'python', __file__, *sys.argv[1:])
+        elif Mode == "Repull&Reload":
+            print (f"DEBUG: We hit {Mode}!")
+            self.KillLights()
+            os.execl(sys.executable, 'git', "clone", "https://github.com/YaBoiDan/OneFlashyBoi")
             os.execl(sys.executable, 'python', __file__, *sys.argv[1:])
         elif Mode == "Manual":
             print (f"DEBUG: We hit {Mode}!")
             self.KillLights()
             
-            Process = subprocess.Popen([ #Pass args to manual mote script
+            Process = subprocess.Popen([ #Pass args to manual script
                 "python3", 
                 "LEDScripts/Manual.py",
                 ReceivedData["Colour"][0]["R"],
                 ReceivedData["Colour"][0]["G"],
                 ReceivedData["Colour"][0]["B"],
             ])
+            CurrentState = Mode
         elif Mode == "Marquee":
             print (f"DEBUG: We hit {Mode}!")
             self.KillLights()
             
-            Process = subprocess.Popen([ #Pass args to manual mote script
+            Process = subprocess.Popen([ #Pass args to manual script
                 "python3", 
                 "LEDScripts/Marquee.py",
                 ReceivedData["Colour"][0]["R"],
                 ReceivedData["Colour"][0]["G"],
                 ReceivedData["Colour"][0]["B"],
             ])
+            CurrentState = Mode
 
         # send the message back
         self._set_headers()
-        self.wfile.write(json.dumps(ReceivedData).encode()) #Parrot
+        #self.wfile.write(json.dumps(ReceivedData).encode()) #Parrot
+        self.wfile.write(json.dumps({
+            'Received': 'ok',
+            'Mode': Mode
+            }).encode())
         
 def run(server_class=HTTPServer, handler_class=Server, port=666):
     try:
