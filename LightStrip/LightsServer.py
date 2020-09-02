@@ -92,14 +92,10 @@ class Server(BaseHTTPRequestHandler):
             print (f"DEBUG: We hit {Mode}!")
             KillLights()
             Process = subprocess.Popen(["python3", "LEDScripts/Rainbow.py"])
-        elif Mode == "RainbowR":
+        elif Mode == "RainbowR": #Slower and longer fade for more smoother.
             print (f"DEBUG: We hit {Mode}!")
             KillLights()
             Process = subprocess.Popen(["python3", "LEDScripts/RainbowR.py"])
-        elif Mode == "Bilge":
-            print (f"DEBUG: We hit {Mode}!")
-            KillLights()
-            Process = subprocess.Popen(["python3", "LEDScripts/bilgetank.py"])
         elif Mode == "Reload":
             print (f"DEBUG: We hit {Mode}!")
             KillLights()
@@ -112,12 +108,14 @@ class Server(BaseHTTPRequestHandler):
         elif Mode == "Manual":
             print (f"DEBUG: We hit {Mode}!")
             KillLights()
+            #print(type(ReceivedData["Colour"][0]["R"])) 
             Process = subprocess.Popen([ #Pass args to manual script
                 "python3", 
                 "LEDScripts/Manual.py",
-                ReceivedData["Colour"][0]["R"],
-                ReceivedData["Colour"][0]["G"],
-                ReceivedData["Colour"][0]["B"],
+                #Home Assistant (YAML) makes these integers, PoSh and everything else is generally a string, as it should be.
+                str(ReceivedData["Colour"][0]["R"]),
+                str(ReceivedData["Colour"][0]["G"]),
+                str(ReceivedData["Colour"][0]["B"]),
             ])
         elif Mode == "Marquee":
             print (f"DEBUG: We hit {Mode}!")
@@ -125,9 +123,10 @@ class Server(BaseHTTPRequestHandler):
             Process = subprocess.Popen([ #Pass args to manual script
                 "python3", 
                 "LEDScripts/Marquee.py",
-                ReceivedData["Colour"][0]["R"],
-                ReceivedData["Colour"][0]["G"],
-                ReceivedData["Colour"][0]["B"],
+                #Home Assistant (YAML) makes these integers, PoSh and everything else is generally a string, as it should be.
+                str(ReceivedData["Colour"][0]["R"]),
+                str(ReceivedData["Colour"][0]["G"]),
+                str(ReceivedData["Colour"][0]["B"]),
             ])
         else:
             self._set_headers()
