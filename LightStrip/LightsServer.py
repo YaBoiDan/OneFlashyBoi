@@ -25,7 +25,7 @@ def KillLights():
         print ("PILights are running... Killing...")
         Process.terminate()
         Process.kill()
-        Process = subprocess.call(["python3",  os.path.dirname(os.path.abspath(__file__)) + "LEDScripts/Off.py"])
+        Process = subprocess.call(["python3",  os.path.dirname(os.path.abspath(__file__)) + "/LEDScripts/Off.py"])
         Process = ""
         ConfigData = json.dumps({
             'Mode': "Off"
@@ -78,23 +78,23 @@ class Server(BaseHTTPRequestHandler):
         if Mode == "On":
             print (f"DEBUG: We hit {Mode}!")
             KillLights()
-            Process = subprocess.Popen(["python3",  os.path.dirname(os.path.abspath(__file__)) + "LEDScripts/On.py"])
+            Process = subprocess.Popen(["python3",  os.path.dirname(os.path.abspath(__file__)) + "/LEDScripts/On.py"])
         elif Mode == "Off":
             print (f"DEBUG: We hit {Mode}!")
             KillLights()
         elif Mode == "ClearAnyway":
-            Process = subprocess.call(["python3",  os.path.dirname(os.path.abspath(__file__)) + "LEDScripts/Off.py"])
+            Process = subprocess.call(["python3",  os.path.dirname(os.path.abspath(__file__)) + "/LEDScripts/Off.py"])
             Process = ""
             #Reload and clear usually fixes things
             return
         elif Mode == "Rainbow":
             print (f"DEBUG: We hit {Mode}!")
             KillLights()
-            Process = subprocess.Popen(["python3",  os.path.dirname(os.path.abspath(__file__)) + "LEDScripts/Rainbow.py"])
+            Process = subprocess.Popen(["python3",  os.path.dirname(os.path.abspath(__file__)) + "/LEDScripts/Rainbow.py"])
         elif Mode == "RainbowR": #Slower and longer fade for more smoother.
             print (f"DEBUG: We hit {Mode}!")
             KillLights()
-            Process = subprocess.Popen(["python3",  os.path.dirname(os.path.abspath(__file__)) + "LEDScripts/RainbowR.py"])
+            Process = subprocess.Popen(["python3",  os.path.dirname(os.path.abspath(__file__)) + "/LEDScripts/RainbowR.py"])
         elif Mode == "Reload":
             print (f"DEBUG: We hit {Mode}!")
             KillLights()
@@ -110,7 +110,7 @@ class Server(BaseHTTPRequestHandler):
             #print(type(ReceivedData["Colour"][0]["R"])) 
             Process = subprocess.Popen([ #Pass args to manual script
                 "python3", 
-                 os.path.dirname(os.path.abspath(__file__)) + "LEDScripts/Manual.py",
+                os.path.dirname(os.path.abspath(__file__)) + "/LEDScripts/Manual.py",
                 #Home Assistant (YAML) makes these integers, PoSh and everything else is generally a string, as it should be.
                 str(ReceivedData["Colour"][0]["R"]),
                 str(ReceivedData["Colour"][0]["G"]),
@@ -121,7 +121,7 @@ class Server(BaseHTTPRequestHandler):
             KillLights()
             Process = subprocess.Popen([ #Pass args to manual script
                 "python3", 
-                 os.path.dirname(os.path.abspath(__file__)) + "LEDScripts/Marquee.py",
+                os.path.dirname(os.path.abspath(__file__)) + "/LEDScripts/Marquee.py",
                 #Home Assistant (YAML) makes these integers, PoSh and everything else is generally a string, as it should be.
                 str(ReceivedData["Colour"][0]["R"]),
                 str(ReceivedData["Colour"][0]["G"]),
