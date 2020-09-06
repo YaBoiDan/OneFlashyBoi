@@ -86,7 +86,6 @@ class Server(BaseHTTPRequestHandler):
             Process = subprocess.call(["python3", "LEDScripts/Off.py"])
             Process = ""
             #Reload and clear usually fixes things
-            CurrentState = "Off"
             return
         elif Mode == "Rainbow":
             print (f"DEBUG: We hit {Mode}!")
