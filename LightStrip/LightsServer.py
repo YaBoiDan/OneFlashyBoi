@@ -64,6 +64,7 @@ class Server(BaseHTTPRequestHandler):
             return
             
         length = int(self.headers['content-length'])
+        self.rfile.read(length) #DEBUG
         ReceivedData = json.loads(self.rfile.read(length))
         
         print (f"> Received Data: {ReceivedData}")
