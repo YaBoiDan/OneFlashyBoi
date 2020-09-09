@@ -28,8 +28,10 @@ def wheel(pos):
  
 wait_ms=20
 iterations=5
-for j in range(256*iterations):
-    for i in range(strip.numPixels()):
-        strip.setPixelColor(i, wheel((i+j) & 255))
-    strip.show()
-    time.sleep(wait_ms/1000.0)
+
+while True:
+    for j in range(256*iterations):
+        for i in range(strip.numPixels()):
+            strip.setPixelColor(i, wheel((i+j) & 255))
+        strip.show()
+        time.sleep(wait_ms/1000.0)
