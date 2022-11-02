@@ -160,6 +160,8 @@ def run(server_class=HTTPServer, handler_class=Server, port=666):
         httpd.serve_forever()
     except KeyboardInterrupt:
         print("\n>> Interrupt received, stopping.")
+    except Exception as e:
+        print(str(e))
     finally:
         print("Killing Pi Lights.")
         KillLights()
