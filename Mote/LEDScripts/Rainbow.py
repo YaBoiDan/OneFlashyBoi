@@ -10,7 +10,7 @@ mote.configure_channel(1, 16, False)
 mote.configure_channel(2, 16, False)
 mote.configure_channel(3, 16, False)
 mote.configure_channel(4, 16, False)
-motephat.set_clear_on_exit(False)
+mote.set_clear_on_exit(False)
 
 try:
     while True:
