@@ -9,3 +9,7 @@ python3 /home/pi/OneFlashyBoi/LightStrip/LightsServer.py >/home/pi/OneFlashyBoi/
 ```
 
 This must be in place *before* the exit 0.
+
+## Mote Install
+
+I had issues installing using the install commands provided by Pimoroni, commands would run, but lights would not light. I ended up installing older version of the library, got it working and then installed the latest version, it keeped working.

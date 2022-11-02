@@ -1,0 +1,35 @@
+$JSON = @"
+{
+    "Mode":"ManualDetailed",
+	"Channel1":[{
+		"Colour":[{
+			"R":"255",
+			"G":"0",
+			"B":"0"
+		}]
+	}],
+	"Channel2":[{
+		"Colour":[{
+			"R":"0",
+			"G":"255",
+			"B":"0"
+		}]
+	}],
+	"Channel3":[{
+		"Colour":[{
+			"R":"0",
+			"G":"0",
+			"B":"255"
+		}]
+	}],
+	"Channel4":[{
+		"Colour":[{
+			"R":"255",
+			"G":"80",
+			"B":"0"
+		}]
+	}]
+}
+"@
+$JSON
+Invoke-WebRequest -uri "192.168.0.97:666" -Method POST -Body $JSON -ContentType "application/json"
